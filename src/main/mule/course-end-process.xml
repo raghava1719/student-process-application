@@ -133,10 +133,13 @@ output multipart/form-data
 			</ee:transform>
 			<http:request method="POST" doc:name="upload to SFTP server" doc:id="9683b90d-7d0f-4cac-8abc-86dda539be39" config-ref="HTTP_Request_configuration_for_report_server" path="/upload-report" sendBodyMode="ALWAYS">
 			</http:request>
-			<http:request method="PATCH" doc:name="Request" doc:id="27e47873-2b2a-4298-a7ee-b74e6cb77f97" config-ref="HTTP_Request_configuration_for_database" path="/students">
+			<http:request method="PATCH" doc:name="Request" doc:id="27e47873-2b2a-4298-a7ee-b74e6cb77f97" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
 				<http:body ><![CDATA[#[{
 	report_file_path:"reports/"++ (vars.marks[0].id) ++ ".csv"
 }]]]></http:body>
+				<http:uri-params ><![CDATA[#[{
+	id:vars.marks[0].id
+}]]]></http:uri-params>
 			</http:request>
 		</foreach>
 		<error-handler >
