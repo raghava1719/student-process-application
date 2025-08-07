@@ -13,12 +13,14 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 				<cron expression="0 0 21 ? * MON-FRI" timeZone="Asia/Kolkata" />
 			</scheduling-strategy>
 		</scheduler>
+		<logger level="INFO" doc:name="start logger" doc:id="f76a7876-be2a-4272-a6a4-b1af1472cf02" message='#["Report generation process started."]'/>
 		<http:request method="GET" doc:name="get pending student to create report" doc:id="9d341031-7cae-4a74-ae96-8756e7a07b25" config-ref="HTTP_Request_configuration_for_database" path="/students" target="students">
 			<http:query-params ><![CDATA[#[{
 	"days_left":0,
 	"report_file_path":"-"
 }]]]></http:query-params>
 		</http:request>
+		<logger level="INFO" doc:name="students count" doc:id="3a82c728-b876-4bc4-a953-43db02b23d8e" message='#["fetched "++ sizeOf(vars.students) ++ "student records."]'/>
 		<ee:transform doc:name="calculate course copletion status" doc:id="ca7df2a5-7178-439e-a57e-e7955fc77b07">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -133,7 +135,7 @@ output multipart/form-data
 			</ee:transform>
 			<http:request method="POST" doc:name="upload to SFTP server" doc:id="9683b90d-7d0f-4cac-8abc-86dda539be39" config-ref="HTTP_Request_configuration_for_report_server" path="/upload-report" sendBodyMode="ALWAYS">
 			</http:request>
-			<http:request method="PATCH" doc:name="Request" doc:id="27e47873-2b2a-4298-a7ee-b74e6cb77f97" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
+			<http:request method="PATCH" doc:name="update report location in student profile" doc:id="27e47873-2b2a-4298-a7ee-b74e6cb77f97" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
 				<http:body ><![CDATA[#[{
 	report_file_path:"reports/"++ (vars.marks[0].id) ++ ".csv"
 }]]]></http:body>
@@ -142,9 +144,10 @@ output multipart/form-data
 }]]]></http:uri-params>
 			</http:request>
 		</foreach>
+		<logger level="INFO" doc:name="End logger" doc:id="e5a43f33-4b49-4850-888a-f19de6e65b46" message='#["Report generation process completed."]'/>
 		<error-handler >
 			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="16c4dcc0-c182-4f8b-8b20-6a75b7a4dc0e" type="ANY">
-				<logger level="ERROR" doc:name="Logger" doc:id="88f92645-bac5-47ca-8508-ac4dac30fb02" message="#[error.errorMessage.payload]"/>
+				<logger level="ERROR" doc:name="Logger" doc:id="88f92645-bac5-47ca-8508-ac4dac30fb02" message="#[error.errorMessage.payload default error.description]"/>
 			</on-error-continue>
 		</error-handler>
 	</flow>

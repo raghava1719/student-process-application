@@ -14,11 +14,11 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 			</scheduling-strategy>
 		</scheduler>
 		<foreach doc:name="For Each (for 5 days of course)" doc:id="58e2e241-9b96-47d1-b0d2-b89998b3a373" collection="#[[1,2,3,4,5]]">
-			<logger level="INFO" doc:name="Logger" doc:id="92cb2cd7-a39b-418f-8dbd-38fb3462d3e9" message="#[payload]"/>
+			<logger level="INFO" doc:name="start logger" doc:id="92cb2cd7-a39b-418f-8dbd-38fb3462d3e9" message='#["Process for updating students for day : " ++ payload ++ " started."]'/>
 			<flow-ref doc:name="fetch students of specific day" doc:id="436403ce-d3f5-4d99-bfa6-6b1afb2daea1" name="fetch-students-by-day-of-course" target="students"/>
 			<foreach doc:name="For Each" doc:id="14be11c7-c8bc-4a71-9221-ec9e51393b18" collection="#[vars.students]">
 				<try doc:name="Try" doc:id="7e528cb4-3540-41e7-8f06-564181acd2eb" >
-					<http:request method="GET" doc:name="Request" doc:id="162ec0f6-b186-4d00-8d82-0de9c79135ea" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/get-score" target="marks" targetValue="#[payload.data[0]]">
+					<http:request method="GET" doc:name="fetch new updated  marks" doc:id="162ec0f6-b186-4d00-8d82-0de9c79135ea" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/get-score" target="marks" targetValue="#[payload.data[0]]">
 				<http:uri-params><![CDATA[#[{
 	id:payload.id
 }]]]></http:uri-params>
@@ -26,8 +26,7 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	day : 6 - payload.days_left
 }]]]></http:query-params>
 			</http:request>
-					<logger level="INFO" doc:name="fetched marks" doc:id="9c7ce534-484b-4496-acb5-60a976647f64" message="#[vars.marks]"/>
-					<ee:transform doc:name="Transform Message" doc:id="418710bc-8aea-489c-a47c-04c884f8f9cf">
+					<ee:transform doc:name="calculate new section and total marks" doc:id="418710bc-8aea-489c-a47c-04c884f8f9cf">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -84,14 +83,13 @@ var weighted_marks = Total_marks*sectionDetails[section].weightage
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-					<logger level="INFO" doc:name="calculated marks" doc:id="d7d8aafc-014a-45cc-a93d-9f3fc0a25b3b" message="#[payload]"/>
-					<http:request method="PATCH" doc:name="Request" doc:id="0b61449b-717a-4c69-b02f-6a9d2365ef8c" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/update-score/{day}" target="updateStatus">
+					<http:request method="PATCH" doc:name="update student-marks-records" doc:id="0b61449b-717a-4c69-b02f-6a9d2365ef8c" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/update-score/{day}" target="updateStatus">
 					<http:uri-params><![CDATA[#[{
 	id:vars.marks.id,
 	day:vars.marks.day_of_course
 }]]]></http:uri-params>
 				</http:request>
-					<http:request method="PATCH" doc:name="Request" doc:id="a4ceb004-997a-492f-9b37-e590a41c0d6f" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
+					<http:request method="PATCH" doc:name="update student profile" doc:id="a4ceb004-997a-492f-9b37-e590a41c0d6f" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
 						<http:body ><![CDATA[#[{
 	cumulated_score:payload.new_total_marks,
 	current_section:payload.new_section,
@@ -107,9 +105,9 @@ var weighted_marks = Total_marks*sectionDetails[section].weightage
 						</on-error-continue>
 					</error-handler>
 				</try>
-				<logger level="INFO" doc:name="Logger" doc:id="3a683488-54b8-48dd-b635-2f9610674377" message='#["completed report card creation for."++ vars.marks.id]' />
 			</foreach>
+			<logger level="INFO" doc:name="End logger" doc:id="3a683488-54b8-48dd-b635-2f9610674377" message='#["Completed student profile for day: " ++ vars.counter]' />
 		</foreach>
-		<logger level="INFO" doc:name="Logger" doc:id="16bd9224-785b-41ac-913a-d77f244c633f" message='#["completed report creation process"]' />
+		<logger level="INFO" doc:name="Completion logger" doc:id="16bd9224-785b-41ac-913a-d77f244c633f" message='#["Completed student profile updation with new section for all the students."]' />
 	</flow>
 </mule>
