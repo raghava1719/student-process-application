@@ -13,6 +13,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 			</scheduling-strategy>
 		</scheduler>
 		<foreach doc:name="For Each (for 5 days of course)" doc:id="7f883bdd-b9f5-48b3-a3cf-297db6b4e29b" collection="#[[1,2,3,4,5]]">
+			<logger level="INFO" doc:name="Logger" doc:id="819c37d7-88b9-4b6e-b5bc-8a7b43a10634" message='#["inserting empty records for students with day : "++ payload]'/>
 			<try doc:name="Try" doc:id="f3c305dd-31ed-455f-bd79-c003b23b4522" >
 				<flow-ref doc:name="fetch students of specific day" doc:id="f83b8b56-92a5-4314-b95f-082aa553b74f" name="fetch-students-by-day-of-course" target="students" />
 				<validation:is-not-empty-collection doc:name="Is not empty collection" doc:id="9171b24c-9633-4d1d-9672-b5502372d939" config-ref="Validation_Config" values="#[vars.students]" message='#["No students found for day : " ++ payload]' />
@@ -24,7 +25,7 @@ output application/json
 vars.students map (student)->
 	{  "id":student.id,
 	section:student.current_section,
-	day_of_course: 6 - payload,
+	day_of_course: 6 - student.days_left,
   "subject_1": 0,
   "subject_2": 0,
   "subject_3": 0,
@@ -41,6 +42,7 @@ vars.students map (student)->
 					</on-error-continue>
 				</error-handler>
 			</try>
+			<logger level="INFO" doc:name="Logger" doc:id="a94eaeb5-62f4-473a-9937-bacb9d27fff6" message='#["Inserting empty records completed for day : " ++ vars.counter default -1]'/>
 		</foreach>
 		<logger level="INFO" doc:name="final status" doc:id="b572cd2c-4c02-4d4f-8b88-48a70baf52a0" message='#["Inserting empty records process completed."]' />
 		<error-handler>
@@ -51,8 +53,15 @@ vars.students map (student)->
 </error-handler>
 	</flow>
 	<sub-flow name="insert-empty-records" doc:id="e7b0669b-659d-4def-8917-9f578eccafb0">
-		<http:request method="POST" doc:name="insert empty record" doc:id="7c1104f4-2f3a-44bb-adf1-e7d683527abb" config-ref="HTTP_Request_configuration_for_database" path="/students/empty-record" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+		<try doc:name="Try" doc:id="08a881a7-c093-454c-a505-ab975578c526" >
+			<http:request method="POST" doc:name="insert empty record" doc:id="7c1104f4-2f3a-44bb-adf1-e7d683527abb" config-ref="HTTP_Request_configuration_for_database" path="/students/empty-record" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
 				</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ce0d3064-cbc0-464e-ac90-4f6530ad7779" type="ANY">
+					<logger level="INFO" doc:name="Logger" doc:id="e43deb16-9011-429a-afd5-ec87c3212d81" message='#["Error while inserting records."]'/>
+				</on-error-continue>
+			</error-handler>
+		</try>
 		<logger level="INFO" doc:name="status of empty records." doc:id="12100e39-caa5-49d6-b733-7f5a4626a384" message="#[payload]" />
 	</sub-flow>
 	<sub-flow name="fetch-students-by-day-of-course" doc:id="576dcf67-5f94-496c-9f95-72ab44138566" >
@@ -63,10 +72,10 @@ vars.students map (student)->
 	report_file_path:"-"
 }]]]></http:query-params>
 			</http:request>
-			<logger level="INFO" doc:name="fetched records" doc:id="ce041e25-319a-4a9f-a4cf-b41b599dd13d" message='#[payload]' />
+			<logger level="INFO" doc:name="fetched records" doc:id="ce041e25-319a-4a9f-a4cf-b41b599dd13d" message='#[sizeOf(payload) ++ " students fetched from database."]' />
 			<error-handler >
 				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="141dd00e-d13f-4060-9229-c73d5735c63e" type="HTTP:NOT_FOUND">
-					<logger level="INFO" doc:name="Logger" doc:id="bf08375b-ef6a-42c5-89dc-d519064f504a" message='#["No students found for day : "]'/>
+					<logger level="INFO" doc:name="Logger" doc:id="bf08375b-ef6a-42c5-89dc-d519064f504a" message='#["No students found for day : " ++ payload]'/>
 					<ee:transform doc:name="Transform Message" doc:id="88644ca6-fa03-4fae-a1fc-f3ae209ef924" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0

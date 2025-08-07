@@ -25,7 +25,7 @@ var section = if( addmissionPrcentage >= 80 ) "A" else if (addmissionPrcentage >
   current_section:section,
   cumulated_score: 0,
   days_left: 5,
-  report_file_path: null,
+  report_file_path: "-",
   created_date: (payload.data.payload.CreatedDate as DateTime) as String {format: "yyyy-MM-dd HH:mm:ss"}
 }
 ]]></ee:set-payload>
