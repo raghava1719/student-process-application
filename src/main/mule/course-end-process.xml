@@ -55,7 +55,7 @@ var studentInfo = {
   "Email": payload.email,
   "Final_Section": payload.current_section,
   "Total Score": payload.cumulated_score,
-  "Passed": payload.passed default false
+  "Course Status": payload.status default "Failed."
 }
 
 var emptyRow = {
@@ -64,7 +64,7 @@ var emptyRow = {
   "Email": null,
   "Final_Section": null,
   "Total Score": null,
-  "Passed": null
+  "Course Status": null
 }
 
 // header for marks section
