@@ -7,13 +7,6 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1eca6f71-a44d-479a-933d-b598885669da" >
-		<http:listener-connection host="0.0.0.0" port="8082" />
-	</http:listener-config>
-	<file:config name="File_Config" doc:name="File Config" doc:id="b530ae18-91e2-4927-8cfa-d714c28d0439" />
-	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="3b09b972-e8a6-4302-9d99-0ff7b94bf586" basePath="/api" >
-		<http:request-connection host="localhost" port="8083" />
-	</http:request-config>
 	<flow name="course-end-processFlow" doc:id="af2e45ab-0d83-4ef6-8281-76f06fb48a5b" >
 		<scheduler doc:name="Scheduler for every day 9 PM" doc:id="58e8021e-7534-4ace-85e7-aed248552288" >
 			<scheduling-strategy >
@@ -139,6 +132,11 @@ output multipart/form-data
 				</ee:message>
 			</ee:transform>
 			<http:request method="POST" doc:name="upload to SFTP server" doc:id="9683b90d-7d0f-4cac-8abc-86dda539be39" config-ref="HTTP_Request_configuration_for_report_server" path="/upload-report" sendBodyMode="ALWAYS">
+			</http:request>
+			<http:request method="PATCH" doc:name="Request" doc:id="27e47873-2b2a-4298-a7ee-b74e6cb77f97" config-ref="HTTP_Request_configuration_for_database" path="/students">
+				<http:body ><![CDATA[#[{
+	report_file_path:"reports/"++ (vars.marks[0].id) ++ ".csv"
+}]]]></http:body>
 			</http:request>
 		</foreach>
 		<error-handler >

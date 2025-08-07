@@ -107,8 +107,9 @@ var weighted_marks = Total_marks*sectionDetails[section].weightage
 						</on-error-continue>
 					</error-handler>
 				</try>
+				<logger level="INFO" doc:name="Logger" doc:id="3a683488-54b8-48dd-b635-2f9610674377" message='#["completed report card creation for."++ vars.marks.id]' />
 			</foreach>
 		</foreach>
-		<logger level="INFO" doc:name="Logger" doc:id="3a683488-54b8-48dd-b635-2f9610674377" message='#["completed marks updation  process section and total marks are updated."]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="16bd9224-785b-41ac-913a-d77f244c633f" message='#["completed report creation process"]' />
 	</flow>
 </mule>
