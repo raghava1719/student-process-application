@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 	<flow name="course-end-processFlow" doc:id="af2e45ab-0d83-4ef6-8281-76f06fb48a5b" >
 		<scheduler doc:name="Scheduler for every day 9 PM" doc:id="58e8021e-7534-4ace-85e7-aed248552288" >
 			<scheduling-strategy >
-				<cron expression="0 0 21 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;" timeZone="Asia/Kolkata" />
+				<cron expression="0 0 21 ? * MON-FRI" timeZone="Asia/Kolkata" />
 			</scheduling-strategy>
 		</scheduler>
 		<http:request method="GET" doc:name="get pending student to create report" doc:id="9d341031-7cae-4a74-ae96-8756e7a07b25" config-ref="HTTP_Request_configuration_for_database" path="/students" target="students">

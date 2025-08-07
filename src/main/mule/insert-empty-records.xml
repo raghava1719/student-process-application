@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	<flow name="insert-empty-recordsFlow" doc:id="552ae222-75b8-4143-8eec-156148a315dd">
 		<scheduler doc:name="Scheduler for every day 8 AM" doc:id="b4966832-99b1-4264-b1ac-b3ebe51a8f5f" >
 			<scheduling-strategy >
-				<cron expression="0 0 8 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;" timeZone="Asia/Kolkata" />
+				<cron expression="0 0 8 ? * MON-FRI" timeZone="Asia/Kolkata" />
 			</scheduling-strategy>
 		</scheduler>
 		<foreach doc:name="For Each (for 5 days of course)" doc:id="7f883bdd-b9f5-48b3-a3cf-297db6b4e29b" collection="#[[1,2,3,4,5]]">

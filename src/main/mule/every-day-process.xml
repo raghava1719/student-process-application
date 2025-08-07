@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	<flow name="every-day-processFlow" doc:id="03e77a86-33c3-4d18-92d3-37edc5a0cd81" >
 		<scheduler doc:name="Scheduler for every day 7 PM" doc:id="1b501f88-1632-44e5-8e93-1d5bbcb9f7f9" >
 			<scheduling-strategy >
-				<cron expression="0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;" timeZone="Asia/Kolkata"/>
+				<cron expression="0 0 19 ? * MON-FRI" timeZone="Asia/Kolkata"/>
 			</scheduling-strategy>
 		</scheduler>
 		<foreach doc:name="For Each (for 5 days of course)" doc:id="58e2e241-9b96-47d1-b0d2-b89998b3a373" collection="#[[1,2,3,4,5]]">
