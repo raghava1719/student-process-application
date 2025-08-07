@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="student-process-applicationFlow" doc:id="5b87e278-a3bf-4608-aac5-c694e74985fd" >
+		<salesforce:replay-channel-listener streamingChannel="/data/Student__ChangeEvent" replayOption="ONLY_NEW" doc:name="Replay channel listener" doc:id="955228b4-db46-49c2-8012-dbc7232dbcc1" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="incomming payload" doc:id="2539d3be-f967-4249-bb70-50564b1fc107" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="50f1e151-38fb-415d-ba21-e248e8217bd1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var addmissionPrcentage = payload.data.payload.Admission_Percentage__c
+var section = if( addmissionPrcentage >= 80 ) "A" else if (addmissionPrcentage >=70) "B" else if(addmissionPrcentage >= 60) "C" else if( addmissionPrcentage >= 50) "D" else "E"
+---
+{
+  id: payload.data.payload.ChangeEventHeader.recordIds[0],
+  name: payload.data.payload.Name,
+  email: payload.data.payload.Email__c,
+  admission_percentage: payload.data.payload.Admission_Percentage__c,
+  address: payload.data.payload.Address__c,
+  current_section:section,
+  cumulated_score: 0,
+  days_left: 5,
+  report_file_path: null,
+  created_date: (payload.data.payload.CreatedDate as DateTime) as String {format: "yyyy-MM-dd HH:mm:ss"}
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1df711d8-1de7-4a05-bc84-8f5f2f34d7fd" message="#[payload]" />
+		<http:request method="POST" doc:name="Request" doc:id="f44ec29a-1934-4df9-8ab5-c204a3252c6a" config-ref="HTTP_Request_configuration_for_database" path="/student/create" />
+	</flow>
+</mule>

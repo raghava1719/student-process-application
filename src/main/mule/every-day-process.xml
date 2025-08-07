@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<flow name="every-day-processFlow" doc:id="03e77a86-33c3-4d18-92d3-37edc5a0cd81" >
+		<scheduler doc:name="Scheduler for every day 7 PM" doc:id="1b501f88-1632-44e5-8e93-1d5bbcb9f7f9" >
+			<scheduling-strategy >
+				<cron expression="0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;" timeZone="Asia/Kolkata"/>
+			</scheduling-strategy>
+		</scheduler>
+		<foreach doc:name="For Each (for 5 days of course)" doc:id="58e2e241-9b96-47d1-b0d2-b89998b3a373" collection="#[[1,2,3,4,5]]">
+			<logger level="INFO" doc:name="Logger" doc:id="92cb2cd7-a39b-418f-8dbd-38fb3462d3e9" message="#[payload]"/>
+			<flow-ref doc:name="fetch students of specific day" doc:id="436403ce-d3f5-4d99-bfa6-6b1afb2daea1" name="fetch-students-by-day-of-course" target="students"/>
+			<foreach doc:name="For Each" doc:id="14be11c7-c8bc-4a71-9221-ec9e51393b18" collection="#[vars.students]">
+				<try doc:name="Try" doc:id="7e528cb4-3540-41e7-8f06-564181acd2eb" >
+					<http:request method="GET" doc:name="Request" doc:id="162ec0f6-b186-4d00-8d82-0de9c79135ea" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/get-score" target="marks" targetValue="#[payload.data[0]]">
+				<http:uri-params><![CDATA[#[{
+	id:payload.id
+}]]]></http:uri-params>
+					<http:query-params><![CDATA[#[{
+	day : 6 - payload.days_left
+}]]]></http:query-params>
+			</http:request>
+					<logger level="INFO" doc:name="fetched marks" doc:id="9c7ce534-484b-4496-acb5-60a976647f64" message="#[vars.marks]"/>
+					<ee:transform doc:name="Transform Message" doc:id="418710bc-8aea-489c-a47c-04c884f8f9cf">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var Total_marks = (vars.marks."subject_1"as Number)
+					 +(vars.marks."subject_2" as Number)+(vars.marks."subject_3" as Number)
+var section  = payload.current_section				 
+var sectionDetails = {
+  "A": {
+    weightage: 1,
+    nextSection: "A",
+    previousSection: "B",
+    totalmarks: 1500
+  },
+  "B": {
+    weightage: 0.8,
+    nextSection: "A",
+    previousSection: "C",
+    totalmarks: 1200
+  },
+  "C": {
+    weightage: 0.6,
+    nextSection: "B",
+    previousSection: "D",
+    totalmarks: 900
+  },
+  "D": {
+    weightage: 0.4,
+    nextSection: "C",
+    previousSection: "E",
+    totalmarks: 600
+  },
+  "E": {
+    weightage: 0.2,
+    nextSection: "D",
+    previousSection: "E",
+    totalmarks: 300
+  }
+}
+var percentage = Total_marks / sectionDetails[section].totalmarks * 100
+var new_section = 
+  if (percentage >= 90) sectionDetails[section].nextSection
+  else if (percentage >= 60) section
+  else sectionDetails[section].previousSection
+var weighted_marks = Total_marks*sectionDetails[section].weightage
+---
+{
+	"subject-1":vars.marks."subject_1",
+	"subject-2":vars.marks."subject_2",
+	"subject-3":vars.marks."subject_3",
+	days_total_marks:Total_marks default -1,
+	weighted_score:weighted_marks default -1,
+	new_section:new_section,
+	new_total_marks:weighted_marks + payload.cumulated_score
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+					<logger level="INFO" doc:name="calculated marks" doc:id="d7d8aafc-014a-45cc-a93d-9f3fc0a25b3b" message="#[payload]"/>
+					<http:request method="PATCH" doc:name="Request" doc:id="0b61449b-717a-4c69-b02f-6a9d2365ef8c" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/update-score/{day}" target="updateStatus">
+					<http:uri-params><![CDATA[#[{
+	id:vars.marks.id,
+	day:vars.marks.day_of_course
+}]]]></http:uri-params>
+				</http:request>
+					<http:request method="PATCH" doc:name="Request" doc:id="a4ceb004-997a-492f-9b37-e590a41c0d6f" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
+						<http:body ><![CDATA[#[{
+	cumulated_score:payload.new_total_marks,
+	current_section:payload.new_section,
+	days_left:5 - vars.marks.day_of_course
+}]]]></http:body>
+						<http:uri-params ><![CDATA[#[{
+	id:vars.marks.id
+}]]]></http:uri-params>
+					</http:request>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="15ac381a-0548-451d-bf19-fd6c592d4e4d" type="ANY">
+							<logger level="INFO" doc:name="Logger" doc:id="b37508c5-b6b4-49dc-9e6c-b33a3007544a" message="#[error.errorMessage.payload]"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</foreach>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="3a683488-54b8-48dd-b635-2f9610674377" message='#["completed marks updation  process section and total marks are updated."]'/>
+	</flow>
+</mule>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1eca6f71-a44d-479a-933d-b598885669da" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="b530ae18-91e2-4927-8cfa-d714c28d0439" />
+	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="3b09b972-e8a6-4302-9d99-0ff7b94bf586" basePath="/api" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<flow name="course-end-processFlow" doc:id="af2e45ab-0d83-4ef6-8281-76f06fb48a5b" >
+		<scheduler doc:name="Scheduler for every day 9 PM" doc:id="58e8021e-7534-4ace-85e7-aed248552288" >
+			<scheduling-strategy >
+				<cron expression="0 0 21 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;0 0 19 ? * MON-FRI&#10;" timeZone="Asia/Kolkata" />
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="get pending student to create report" doc:id="9d341031-7cae-4a74-ae96-8756e7a07b25" config-ref="HTTP_Request_configuration_for_database" path="/students" target="students">
+			<http:query-params ><![CDATA[#[{
+	"days_left":0,
+	"report_file_path":"-"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="calculate course copletion status" doc:id="ca7df2a5-7178-439e-a57e-e7955fc77b07">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+import take, drop from dw::core::Arrays
+output application/json
+
+var allStudents = vars.students orderBy ((s) -> -s.cumulated_score)
+var passCount = ceil(sizeOf(allStudents) * 0.3) as Number
+var passedStudents = allStudents take passCount
+var failedStudents = allStudents drop passCount
+
+---
+(passedStudents map (s) -> s ++ { status: "Passed" }) ++ 
+(failedStudents map (s) -> s ++ { status: "Failed" })
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="bebd12ad-9e92-4eba-b9fd-74592b0ec051" collection="#[payload]">
+			<http:request method="GET" doc:name="get all 5 days records" doc:id="27427e5d-12d1-487e-bcca-f7e1af2c6e56" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/get-score" target="marks" targetValue="#[payload.data]">
+				<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"id" : payload.id
+}]]]></http:uri-params>
+			</http:request>
+			<ee:transform doc:name="create csv file(report)" doc:id="f6220cfa-24c5-483b-8274-e026dcffa66f" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output text/csv separator=","
+
+var studentInfo = {
+  "ID": payload.id,
+  "Name": payload.name,
+  "Email": payload.email,
+  "Final_Section": payload.current_section,
+  "Total Score": payload.cumulated_score,
+  "Passed": payload.passed default false
+}
+
+var emptyRow = {
+  "ID": null,
+  "Name": null,
+  "Email": null,
+  "Final_Section": null,
+  "Total Score": null,
+  "Passed": null
+}
+
+// header for marks section
+var marksHeaderRow = {
+  "Day of Course": "Day of Course",
+  "Section": "Section",
+  "Subject 1": "Subject 1",
+  "Subject 2": "Subject 2",
+  "Subject 3": "Subject 3",
+  "Day Total": "Day Total",
+  "Weighted Score": "Weighted Score",
+  "Created Date": "Created Date"
+}
+
+var marksData = vars.marks map (m) -> {
+  "Day of Course": m.day_of_course,
+  "Section": m.section,
+  "Subject 1": m.subject_1,
+  "Subject 2": m.subject_2,
+  "Subject 3": m.subject_3,
+  "Day Total": m.days_total_marks,
+  "Weighted Score": m.weighted_score,
+  "Created Date": m.created_date
+}
+
+---
+
+[
+  studentInfo,
+  emptyRow,
+  emptyRow,
+  emptyRow
+] ++
+[
+  marksHeaderRow
+] ++
+marksData
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<ee:transform doc:name="create form-data" doc:id="0f7ac0b5-6a02-4ce3-8679-c78747fe1886" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output multipart/form-data
+---
+{
+  parts: {
+    fileName: {
+      content: "reports/"++ (vars.marks[0].id) ++ ".csv",
+      headers: {
+        "Content-Disposition": "form-data; name=\"fileName\"",
+        "Content-Type": "text/plain"
+      }
+    },
+    file: {
+      content: payload,
+      headers: {
+        "Content-Disposition": "form-data; name=\"file\"; filename=\"" ++ vars.marks[0].id ++ ".csv\"",
+        "Content-Type": "text/csv"
+      }
+    }
+  }
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<http:request method="POST" doc:name="upload to SFTP server" doc:id="9683b90d-7d0f-4cac-8abc-86dda539be39" config-ref="HTTP_Request_configuration_for_report_server" path="/upload-report" sendBodyMode="ALWAYS">
+			</http:request>
+		</foreach>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="16c4dcc0-c182-4f8b-8b20-6a75b7a4dc0e" type="ANY">
+				<logger level="ERROR" doc:name="Logger" doc:id="88f92645-bac5-47ca-8508-ac4dac30fb02" message="#[error.errorMessage.payload]"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

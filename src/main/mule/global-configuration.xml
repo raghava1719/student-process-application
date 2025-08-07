@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="e7accb5e-7dc3-4b7d-87e2-27a776f87fd1" file="config-properties.yaml" />
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="c3f03539-ca52-430a-adc6-c7675bb538ab" >
+		<salesforce:basic-connection username="${salesforce.username}" password="${secure::salesforce.password}" securityToken="${secure::salesforce.token}" />
+	</salesforce:sfdc-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="458f6c23-943f-469c-8856-3ebb4d6c0c7b" file="config-properties.yaml" key="thisismysecurekey" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<http:request-config name="HTTP_Request_configuration_for_database" doc:name="HTTP Request configuration" doc:id="acc24f0b-2078-4fda-b475-7b68438da2d4" basePath="/api" >
+		<http:request-connection host="student-system-api-74weim.5sc6y6-1.usa-e2.cloudhub.io" port="443" protocol="HTTPS"/>
+	</http:request-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="306a3e5b-f807-4bb1-a7bd-312a700c8e6b" >
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="${database.databaseName}" />
+	</db:config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="4001f5bb-ef69-48b0-b7b5-2ba896104f51" maxEntries="1000" />
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="f16e29f0-02d2-4290-8eea-0f4c3089f0ed" />
+	<http:request-config name="HTTP_Request_configuration_for_report_server" doc:name="HTTP Request configuration" doc:id="57a88d4e-3a01-41de-bcaf-ef9f3e5c77a2" basePath="/api" >
+		<http:request-connection host="student-report-service-runtime-6c4xoi.5sc6y6-4.usa-e2.cloudhub.io" port="443" protocol="HTTPS"/>
+	</http:request-config>
+</mule>
