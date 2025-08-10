@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="every-day-process-test-suite.xml" />
+	<munit:test name="every-day-process-test-suite-every-day-processFlowTest" doc:id="7884e336-3c3f-4383-99ff-10f53a0bd859" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="76cc3721-d1f2-4366-ba96-36e565084fbd" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="436403ce-d3f5-4d99-bfa6-6b1afb2daea1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<set-variable value='#[{&#10;    "status": "success",&#10;    "message": "Student record(s) retrieved",&#10;    "data": [&#10;        {&#10;            "id": "a01dN00000eAHRxQAO",&#10;            "section": "C",&#10;            "day_of_course": 1,&#10;            "subject_1": 100,&#10;            "subject_2": 100,&#10;            "subject_3": 100,&#10;            "days_total_marks": 300,&#10;            "weighted_score": 180,&#10;            "created_date": "2025-08-08T09:26:31"&#10;        }&#10;    ]&#10;}]' doc:name="Set Variable" doc:id="e281227d-8c3b-45f9-b6db-ef70bc716490" variableName="students"/>
+			<set-variable value='#[{&#10;    "status": "success",&#10;    "message": "Student record(s) retrieved",&#10;    "data": [&#10;        {&#10;            "id": "a01dN00000eAHRxQAO",&#10;            "section": "C",&#10;            "day_of_course": 1,&#10;            "subject_1": 100,&#10;            "subject_2": 100,&#10;            "subject_3": 100,&#10;            "days_total_marks": 300,&#10;            "weighted_score": 180,&#10;            "created_date": "2025-08-08T09:26:31"&#10;        }&#10;    ]&#10;}]' doc:name="Set Variable" doc:id="9fbe44a2-cad4-41f1-b1ed-01c33616e545" variableName="marks" />
+			<munit-tools:mock-when doc:name="Mock when" doc:id="024ce512-2eb3-46fe-8cb4-efbae5ce0f96" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="162ec0f6-b186-4d00-8d82-0de9c79135ea" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="78cc989a-d3bc-4386-9262-ef89aec715d5" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0b61449b-717a-4c69-b02f-6a9d2365ef8c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Marks updated successful."&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6b6177e6-103f-4f2c-8595-0a3543a5d393" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a4ceb004-997a-492f-9b37-e590a41c0d6f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Student updated successfully"&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to every-day-processFlow" doc:id="27d3db5c-dcc2-414f-a88d-a68072edcb62" name="every-day-processFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="3665d6e9-d786-4d41-8aa7-7987c8dbaf31" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="every-day-process-test-suite-every-day-processFlowTest1" doc:id="131308df-fd35-4544-9e6d-483c1b502c04" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="09fe611e-92d6-4974-9059-d14e0fd582a6" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="436403ce-d3f5-4d99-bfa6-6b1afb2daea1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="239d6d21-e2bc-496a-a86c-2887927dcf8d" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="162ec0f6-b186-4d00-8d82-0de9c79135ea" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when2" doc:id="23e0e398-f5d6-40de-8167-1e9947f489e8" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0b61449b-717a-4c69-b02f-6a9d2365ef8c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Marks updated successful."&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when3" doc:id="8265cb0c-3338-4ef3-8a67-4aa7e14cb816" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a4ceb004-997a-492f-9b37-e590a41c0d6f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Student updated successfully"&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[{&#10;    "status": "success",&#10;    "message": "Student record(s) retrieved",&#10;    "data": [&#10;        {&#10;            "id": "a01dN00000eAHRxQAO",&#10;            "section": "C",&#10;            "day_of_course": 1,&#10;            "subject_1": 100,&#10;            "subject_2": 100,&#10;            "subject_3": 100,&#10;            "days_total_marks": 300,&#10;            "weighted_score": 180,&#10;            "created_date": "2025-08-08T09:26:31"&#10;        }&#10;    ]&#10;}]' doc:name="Set Variable" doc:id="0f132002-c34f-4ab4-acc3-249eb9513897" variableName="students" />
+			<set-variable value='#[{&#10;            "id": "a01dN00000eAHRxQAO",&#10;            "section": "C",&#10;            "day_of_course": 1,&#10;            "subject_1": 100,&#10;            "subject_2": 100,&#10;            "subject_3": 100,&#10;            "days_total_marks": 300,&#10;            "weighted_score": 180,&#10;            "created_date": "2025-08-08T09:26:31"&#10;        }]' doc:name="Set Variable1" doc:id="af50d040-f122-4a4a-834c-3790d7299a72" variableName="marks" />
+			<set-payload value="#[[1,2,3,4,5]]" doc:name="Set Payload" doc:id="0bf4bc7e-44b3-4186-ac27-313ecf9b05b3" />
+			<flow-ref doc:name="Flow-ref to every-day-processFlow" doc:id="42c40c11-d7f0-46b3-9203-448c111493b1" name="every-day-processFlow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="325c2d0c-42d7-4c26-9be1-c61f2d192fbb" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="every-day-process-test-suite-subflowTest" doc:id="2a8c2a58-1414-421c-9e7d-41a4cd552a6c" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="4e2426a2-ca62-42a2-b7bc-4949f7eab464" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="162ec0f6-b186-4d00-8d82-0de9c79135ea" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e661b0ea-bd72-43d0-8fdc-3e97f425e4c2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0b61449b-717a-4c69-b02f-6a9d2365ef8c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dffbbbef-1a78-42c4-a3fc-7229f03d4bbb" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a4ceb004-997a-492f-9b37-e590a41c0d6f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[{&#10;            "id": "a01dN00000eAHRxQAO",&#10;            "section": "C",&#10;            "day_of_course": 1,&#10;            "subject_1": 100,&#10;            "subject_2": 100,&#10;            "subject_3": 100,&#10;            "days_total_marks": 300,&#10;            "weighted_score": 180,&#10;            "created_date": "2025-08-08T09:26:31"&#10;        }]' doc:name="Set Variable" doc:id="8e5fff9f-4b3b-4731-bd03-66f70ae473fa" variableName="marks" />
+			<set-variable value='#[{&#10;            "id": "a01dN00000eAHRxQAO",&#10;            "section": "C",&#10;            "day_of_course": 1,&#10;            "subject_1": 100,&#10;            "subject_2": 100,&#10;            "subject_3": 100,&#10;            "days_total_marks": 300,&#10;            "weighted_score": 180,&#10;            "created_date": "2025-08-08T09:26:31"&#10;        }]' doc:name="Set Variable1" doc:id="f5f4c346-2c29-4b65-87d7-b12a8c8dc6e7" variableName="marks" />
+			<set-payload value='#[{&#10;        "id": "a01dN00000e7yZGQAY",&#10;        "name": "Rupasri",&#10;        "email": "rupasri@example.com",&#10;        "admission_percentage": 85,&#10;        "address": "DLF",&#10;        "current_section": "C",&#10;        "cumulated_score": 2040,&#10;        "days_left": 0,&#10;        "total_score": 7500,&#10;        "report_file_path": "reports/a01dN00000e7yZGQAY.csv",&#10;        "created_date": "2025-08-07T14:02:25"&#10;    }]' doc:name="Set Payload" doc:id="b61d13a5-d4d7-47ba-b99b-5d60c35e78ce" />
+			<flow-ref doc:name="Flow-ref to subflow" doc:id="611337d9-c7a8-46bf-bb96-697450098543" name="subflow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a5df0b4c-7db3-42ec-a9fc-814e145414f9" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

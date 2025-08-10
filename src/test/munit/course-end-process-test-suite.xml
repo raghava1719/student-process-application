@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="course-end-process-test-suite.xml" />
+	<munit:test name="course-end-process-test-suite-course-end-processFlowTest" doc:id="a6c28d25-968a-4a68-a617-b3fb0f883402" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a22d0451-3c69-4073-a42a-225ff7922bd4" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9d341031-7cae-4a74-ae96-8756e7a07b25" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="62e048f8-9e9e-4e62-a729-36ae61381e0f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="27427e5d-12d1-487e-bcca-f7e1af2c6e56" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="deedfda4-cd01-4da7-973d-4329191bf75e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9683b90d-7d0f-4cac-8abc-86dda539be39" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5d5ce669-ea39-4868-95b4-43b90cb18906" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="27e47873-2b2a-4298-a7ee-b74e6cb77f97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[[&#10;    {&#10;        "id": "a01dN00000e90mXQAQ",&#10;        "name": "Ramu",&#10;        "email": "ramu@example.com",&#10;        "admission_percentage": 85,&#10;        "address": "DLF",&#10;        "current_section": "E",&#10;        "cumulated_score": 840,&#10;        "days_left": 0,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-07T19:51:07"&#10;    }&#10;]]' doc:name="Set Variable" doc:id="624552b5-b633-40a6-98c7-f709fa395b0f" variableName="students"/>
+			<set-payload value='#[{&#10;        "id": "a01dN00000e90mXQAQ",&#10;        "name": "Ramu",&#10;        "email": "ramu@example.com",&#10;        "admission_percentage": 85,&#10;        "address": "DLF",&#10;        "current_section": "E",&#10;        "cumulated_score": 840,&#10;        "days_left": 0,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-07T19:51:07"&#10;    }]' doc:name="Set Payload" doc:id="3a7521e9-e12a-4cdc-af89-ffa120ac34f9" />
+			<set-variable value='#[[&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "A",&#10;            "day_of_course": 1,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 480,&#10;            "created_date": "2025-08-07T20:17:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 2,&#10;            "subject_1": 50,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 650,&#10;            "weighted_score": 390,&#10;            "created_date": "2025-08-07T23:28:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 3,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 360,&#10;            "created_date": "2025-08-07T23:36:01"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 4,&#10;            "subject_1": 300,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 900,&#10;            "weighted_score": 540,&#10;            "created_date": "2025-08-07T23:44:33"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "B",&#10;            "day_of_course": 5,&#10;            "subject_1": 400,&#10;            "subject_2": 400,&#10;            "subject_3": 400,&#10;            "days_total_marks": 1200,&#10;            "weighted_score": 960,&#10;            "created_date": "2025-08-07T23:50:13"&#10;        }&#10;    ]]' doc:name="Set Variable" doc:id="67e30644-3248-426a-83a6-4117d9d8d6a7" variableName="marks"/>
+			<flow-ref doc:name="Flow-ref to course-end-processFlow" doc:id="4d29cf54-668d-420c-a106-f120f0d5cbe5" name="course-end-processFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="391e956a-949b-4206-9497-ac28316b0c50" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="course-end-process-test-suite-course-end-processFlowTest1" doc:id="cdebf499-5293-453c-af63-6e81baa3e1fb" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="12976efa-588d-4f27-87df-3a64f11f1ba6" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9d341031-7cae-4a74-ae96-8756e7a07b25" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="3e9b0f0a-7f57-4217-be00-e8542e1e8451" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="27427e5d-12d1-487e-bcca-f7e1af2c6e56" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when2" doc:id="b0ecaf8d-042a-4dd2-adab-ff2bdd03a3da" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9683b90d-7d0f-4cac-8abc-86dda539be39" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when3" doc:id="73a0c162-8621-471b-878c-929ca3b163bc" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="27e47873-2b2a-4298-a7ee-b74e6cb77f97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[{&#10;        "id": "a01dN00000e90mXQAQ",&#10;        "name": "Ramu",&#10;        "email": "ramu@example.com",&#10;        "admission_percentage": 85,&#10;        "address": "DLF",&#10;        "current_section": "E",&#10;        "cumulated_score": 840,&#10;        "days_left": 0,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-07T19:51:07"&#10;    }]' doc:name="Set Payload" doc:id="4cc47ee9-ffef-4043-aa99-db76ef60b61c" />
+			<set-variable value='#[[&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "A",&#10;            "day_of_course": 1,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 480,&#10;            "created_date": "2025-08-07T20:17:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 2,&#10;            "subject_1": 50,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 650,&#10;            "weighted_score": 390,&#10;            "created_date": "2025-08-07T23:28:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 3,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 360,&#10;            "created_date": "2025-08-07T23:36:01"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 4,&#10;            "subject_1": 300,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 900,&#10;            "weighted_score": 540,&#10;            "created_date": "2025-08-07T23:44:33"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "B",&#10;            "day_of_course": 5,&#10;            "subject_1": 400,&#10;            "subject_2": 400,&#10;            "subject_3": 400,&#10;            "days_total_marks": 1200,&#10;            "weighted_score": 960,&#10;            "created_date": "2025-08-07T23:50:13"&#10;        }&#10;    ]]' doc:name="Set Variable1" doc:id="03e0e93c-e424-4164-a8a4-100efc22ff3b" variableName="marks" />
+			<flow-ref doc:name="Flow-ref to course-end-processFlow" doc:id="5dda5366-b1e7-4ce2-aaf1-cac5ad029190" name="course-end-processFlow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="da97920d-2bb6-4cfe-9728-6a460fb72782" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

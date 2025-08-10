@@ -7,17 +7,8 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
-	<flow name="every-day-processFlow" doc:id="03e77a86-33c3-4d18-92d3-37edc5a0cd81" >
-		<scheduler doc:name="Scheduler for every day 7 PM" doc:id="1b501f88-1632-44e5-8e93-1d5bbcb9f7f9" >
-			<scheduling-strategy >
-				<cron expression="0 0 19 ? * MON-FRI" timeZone="Asia/Kolkata"/>
-			</scheduling-strategy>
-		</scheduler>
-		<foreach doc:name="For Each (for 5 days of course)" doc:id="58e2e241-9b96-47d1-b0d2-b89998b3a373" collection="#[[1,2,3,4,5]]">
-			<logger level="INFO" doc:name="start logger" doc:id="92cb2cd7-a39b-418f-8dbd-38fb3462d3e9" message='#["Process for updating students for day : " ++ payload ++ " started."]'/>
-			<flow-ref doc:name="fetch students of specific day" doc:id="436403ce-d3f5-4d99-bfa6-6b1afb2daea1" name="fetch-students-by-day-of-course" target="students"/>
-			<foreach doc:name="For Each" doc:id="14be11c7-c8bc-4a71-9221-ec9e51393b18" collection="#[vars.students]">
-				<try doc:name="Try" doc:id="7e528cb4-3540-41e7-8f06-564181acd2eb" >
+	<sub-flow name="subflow" doc:id="2159f5db-a07c-4165-b6af-0a2b51208b72" >
+		<try doc:name="Try" doc:id="7e528cb4-3540-41e7-8f06-564181acd2eb">
 					<http:request method="GET" doc:name="fetch new updated  marks" doc:id="162ec0f6-b186-4d00-8d82-0de9c79135ea" config-ref="HTTP_Request_configuration_for_database" path="/student/{id}/get-score" target="marks" targetValue="#[payload.data[0]]">
 				<http:uri-params><![CDATA[#[{
 	id:payload.id
@@ -90,21 +81,33 @@ var weighted_marks = Total_marks*sectionDetails[section].weightage
 }]]]></http:uri-params>
 				</http:request>
 					<http:request method="PATCH" doc:name="update student profile" doc:id="a4ceb004-997a-492f-9b37-e590a41c0d6f" config-ref="HTTP_Request_configuration_for_database" path="/students/{id}">
-						<http:body ><![CDATA[#[{
+						<http:body><![CDATA[#[{
 	cumulated_score:payload.new_total_marks,
 	current_section:payload.new_section,
 	days_left:5 - vars.marks.day_of_course
 }]]]></http:body>
-						<http:uri-params ><![CDATA[#[{
+						<http:uri-params><![CDATA[#[{
 	id:vars.marks.id
 }]]]></http:uri-params>
 					</http:request>
-					<error-handler >
+					<error-handler>
 						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="15ac381a-0548-451d-bf19-fd6c592d4e4d" type="ANY">
-							<logger level="INFO" doc:name="Logger" doc:id="b37508c5-b6b4-49dc-9e6c-b33a3007544a" message="#[error.errorMessage.payload]"/>
+							<logger level="INFO" doc:name="Logger" doc:id="b37508c5-b6b4-49dc-9e6c-b33a3007544a" message="#[error.errorMessage.payload]" />
 						</on-error-continue>
 					</error-handler>
 				</try>
+	</sub-flow>
+	<flow name="every-day-processFlow" doc:id="03e77a86-33c3-4d18-92d3-37edc5a0cd81" >
+		<scheduler doc:name="Scheduler for every day 7 PM" doc:id="1b501f88-1632-44e5-8e93-1d5bbcb9f7f9" >
+			<scheduling-strategy >
+				<cron expression="0 0 19 ? * MON-FRI" timeZone="Asia/Kolkata"/>
+			</scheduling-strategy>
+		</scheduler>
+		<foreach doc:name="For Each (for 5 days of course)" doc:id="58e2e241-9b96-47d1-b0d2-b89998b3a373" collection="#[[1,2,3,4,5]]">
+			<logger level="INFO" doc:name="start logger" doc:id="92cb2cd7-a39b-418f-8dbd-38fb3462d3e9" message='#["Process for updating students for day : " ++ payload ++ " started."]'/>
+			<flow-ref doc:name="fetch students of specific day" doc:id="436403ce-d3f5-4d99-bfa6-6b1afb2daea1" name="fetch-students-by-day-of-course" target="students"/>
+			<foreach doc:name="For Each" doc:id="14be11c7-c8bc-4a71-9221-ec9e51393b18" collection="#[vars.students]">
+				<flow-ref doc:name="Flow Reference" doc:id="14b018f6-93e6-4fdc-a43a-629df011229b" name="subflow" />
 			</foreach>
 			<logger level="INFO" doc:name="End logger" doc:id="3a683488-54b8-48dd-b635-2f9610674377" message='#["Completed student profile for day: " ++ vars.counter]' />
 		</foreach>

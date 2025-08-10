@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="insert-empty-records-test-suite.xml" />
+	<munit:test name="insert-empty-records-test-suite-fetch-students-by-day-of-courseTest" doc:id="dae7ac5c-d60a-42e5-a0db-b91aff5b0a18" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="97471bfc-ed50-4db8-9fc1-826d0d290aad" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="5b567c94-d897-4063-bfb9-2f91fe155ce0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;    {&#10;        "id": "a01dN00000eAHRxQAO",&#10;        "name": "Test person-2",&#10;        "email": "test-2@example.com",&#10;        "admission_percentage": 65,&#10;        "address": "DLF",&#10;        "current_section": "D",&#10;        "cumulated_score": 360,&#10;        "days_left": 2,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-08T09:25:19"&#10;    }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b8e3e19f-e951-4027-9ef5-7f799e5a6c27" >
+				<munit:attributes value='#[{queryParams:{&#10;	days_left : payload,&#10;	report_file_path:"-"&#10;}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to fetch-students-by-day-of-course" doc:id="74df82f2-3bc8-4ff1-8f3a-6dd197b7c920" name="fetch-students-by-day-of-course"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c9c9aef3-c7eb-4ba2-aab7-2edbd806b469" actual="#[payload]" expected='#[[&#10;    {&#10;        "id": "a01dN00000eAHRxQAO",&#10;        "name": "Test person-2",&#10;        "email": "test-2@example.com",&#10;        "admission_percentage": 65,&#10;        "address": "DLF",&#10;        "current_section": "D",&#10;        "cumulated_score": 360,&#10;        "days_left": 2,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-08T09:25:19"&#10;    }&#10;]]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="insert-empty-records-test-suite-fetch-students-by-day-of-courseTest1" doc:id="3804c6ed-92ec-464f-ab64-c9c39f361ba9" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="bfb1e08d-afb6-4603-a180-38a0945ff875" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="5b567c94-d897-4063-bfb9-2f91fe155ce0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="8430c136-e247-4c2d-abb0-2cc500f4ba3d" >
+				<munit:payload value="#[1]" />
+				<munit:attributes value='#[{queryParams:{&#10;	days_left : 1,&#10;	report_file_path:"-"&#10;}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to fetch-students-by-day-of-course" doc:id="a576599c-90d4-4ef0-b717-a1aa6c5e8fcb" name="fetch-students-by-day-of-course" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d0ce7c6f-b2a5-4eee-9e35-f9ad3c703f0b" actual="#[payload]" expected='#[[&#10;    &#10;]]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="insert-empty-records-test-suite-insert-empty-recordsTest" doc:id="65230f3f-5732-40c4-8616-bfae6beaa06c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="88154401-82b4-49ce-8e1f-856c10df94e6" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7c1104f4-2f3a-44bb-adf1-e7d683527abb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Empty record inserted successful."&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insert-empty-records" doc:id="3d981fe7-539b-4dcf-9196-ce7f71c3d7be" name="insert-empty-records"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="9fcea26d-f939-4ebc-a80e-a150455843ef" actual="#[payload]" expected='#[{&#10;    "message": "Empty record inserted successful."&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="insert-empty-records-test-suite-insert-empty-recordsTest1" doc:id="050d8952-ca94-41d1-8389-38b5d98cd02f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="752290f6-6ea1-436d-a148-6fcb36755555" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7c1104f4-2f3a-44bb-adf1-e7d683527abb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "statusCode": 400,&#10;    "message": "All records failed"&#10;}]' />
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insert-empty-records" doc:id="9ef57605-cace-41ed-ba66-48bdd9a89c59" name="insert-empty-records" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="192e488e-9562-46a3-aaf0-8bd6687f3e8b" actual="#[payload]" expected='#[{&#10;    "statusCode": 400,&#10;    "message": "All records failed"&#10;}]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="insert-empty-records-test-suite-insert-empty-recordsFlowTest" doc:id="6d40219e-25cf-4b27-8d31-5ed5f5d83b09" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="76543998-b332-4898-952d-431d74bb91d8" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f83b8b56-92a5-4314-b95f-082aa553b74f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="bba521dd-371b-44cf-902d-14ef035d7a6b" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="344a5a05-3618-4d42-9a3d-7959e4403500" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Empty record inserted successful."&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[[&#10;    {&#10;        "id": "a01dN00000eAHRxQAO",&#10;        "name": "Test person-2",&#10;        "email": "test-2@example.com",&#10;        "admission_percentage": 65,&#10;        "address": "DLF",&#10;        "current_section": "D",&#10;        "cumulated_score": 360,&#10;        "days_left": 2,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-08T09:25:19"&#10;    }&#10;]]' doc:name="Set Variable" doc:id="3209f85b-34ce-47b0-8442-36152515bdce" variableName="students"/>
+			<flow-ref doc:name="Flow-ref to insert-empty-recordsFlow" doc:id="fc4b72a6-3dc8-4a7a-aa79-df1c2c722466" name="insert-empty-recordsFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="61dab7f7-f284-4c6d-9cf7-1d619b716448" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="insert-empty-records-test-suite-insert-empty-recordsFlowTest1" doc:id="8972d1f7-74a3-44eb-851c-27c8746e2573" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="5169aedc-165e-4b5e-83c0-f690521124e2" processor="flow-ref">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="f83b8b56-92a5-4314-b95f-082aa553b74f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="105b0ba2-6006-41ac-8cf8-6cae75da9c6b" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f83b8b56-92a5-4314-b95f-082aa553b74f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when2" doc:id="8bc3f254-2201-4a46-8d52-c1f292430e18" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="344a5a05-3618-4d42-9a3d-7959e4403500" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Empty record inserted successful."&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[[&#10;    {&#10;        "id": "a01dN00000eAHRxQAO",&#10;        "name": "Test person-2",&#10;        "email": "test-2@example.com",&#10;        "admission_percentage": 65,&#10;        "address": "DLF",&#10;        "current_section": "D",&#10;        "cumulated_score": 360,&#10;        "days_left": 2,&#10;        "total_score": 7500,&#10;        "report_file_path": "-",&#10;        "created_date": "2025-08-08T09:25:19"&#10;    }&#10;]]' doc:name="Set Variable" doc:id="21c0800f-66b8-4b69-8421-7d6f810609e5" variableName="students" />
+			<flow-ref doc:name="Flow-ref to insert-empty-recordsFlow" doc:id="1e8b214c-631d-4aee-82b8-21c4a28aa619" name="insert-empty-recordsFlow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a3282228-f3eb-4213-99a3-8c87e90dd2a0" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
